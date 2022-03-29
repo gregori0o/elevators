@@ -15,8 +15,8 @@ cd elevators
 ```
 2) Compile and run program:
 ```
-javac src/Main.java
-java src/Main int<first floor> int<last floor> int<number of elevators>
+javac src/*.java
+java -cp src Main int<first floor> int<last floor> int<number of elevators>
 ```
 
 ## Simulation
