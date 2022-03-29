@@ -24,7 +24,8 @@ public class Building {
     }
 
     public String getStatus () {
-        return elevatorSystem.toString();
+        String buildingDescription = "Building -> min floor: " + firstFloor + " max floor: " + lastFloor + " with " + elevatorNum + " elevators.\n";
+        return buildingDescription + elevatorSystem.toString();
     }
 
     public void click (int num, int floor) {
@@ -66,6 +67,6 @@ public class Building {
             if (res != null)
                 return res;
         }
-        return new ArrayList<Integer>();
+        return new ArrayList<>();
     }
 }

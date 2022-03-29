@@ -5,12 +5,13 @@ public class Elevator {
     private TreeSet<Pair> notificationNext;
     private Queue<Pair> notificationQueue;
     private int currentFloor;
-    private Building building;
+    private final Building building;
 
 
+    //class pair to hold two elements, floor and direction
     private class Pair implements Comparable {
-        private int floor;
-        private int nextDirection;
+        private final int floor;
+        private final int nextDirection; //1 - go up, -1 - go down, 0 - go out of elevator
 
         public Pair (int firstElement, int secondElement) {
             this.floor = firstElement;
@@ -63,26 +64,25 @@ public class Elevator {
     }
 
     public void step() {
-        if (state == ElevatorState.STOP) {
+        if (state == ElevatorState.STOP) { //elevator is stopped so check queue
             if (!notificationQueue.isEmpty())
                 state = ElevatorState.GO;
         }
         move();
-        if (state == ElevatorState.GO) {
-            while (currentFloor == notificationQueue.element().getFloor()) {
+        if (state == ElevatorState.GO) { //elevator go to floor of top of queue
+            while (currentFloor == notificationQueue.element().getFloor()) { //while, because we may have on queue something from click command
                 Pair nextMove = notificationQueue.remove();
                 if (nextMove.getNextDirection() == 0) {
                     state = ElevatorState.STOP;
                     if (notificationQueue.isEmpty())
                         break;
-                    continue;
                 }
-                else if (nextMove.getNextDirection() == 1) {
+                else if (nextMove.getNextDirection() == 1) { //elevator take passenger and go up
                     state = ElevatorState.UP;
-                    for (int floor : building.getPassengers(currentFloor, 1)) {
+                    for (int floor : building.getPassengers(currentFloor, 1)) { //take passengers from floor
                         setNotification(floor, 0);
                     }
-                    for (Iterator<Pair> it = notificationQueue.iterator(); it.hasNext(); ) {
+                    for (Iterator<Pair> it = notificationQueue.iterator(); it.hasNext(); ) { //take as much as possible from queue
                         Pair element = it.next();
                         if (element.getFloor() >= currentFloor && element.getNextDirection() != -1) {
                             if (element.getFloor() > currentFloor) {
@@ -93,7 +93,7 @@ public class Elevator {
                     }
                     break;
                 }
-                else if (nextMove.getNextDirection() == -1) {
+                else if (nextMove.getNextDirection() == -1) { //symmetrical situation
                     state = ElevatorState.DOWN;
                     for (int floor : building.getPassengers(currentFloor, -1)) {
                         setNotification(floor, 0);
@@ -111,7 +111,7 @@ public class Elevator {
                 }
             }
         }
-        else if (state == ElevatorState.UP) {
+        else if (state == ElevatorState.UP) { //go up while tree set is not empty and take passenger on the way
             boolean flag = false;
             while (notificationNext.first().getFloor() == currentFloor) {
                 if (notificationNext.first().getNextDirection() == 1)

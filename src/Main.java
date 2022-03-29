@@ -17,7 +17,7 @@ public class Main {
                 System.out.println("Number of elevators must be positive.");
                 System.exit(-1);
             }
-            Building building = new Building(0, 10, 5);
+            Building building = new Building(firstFloor, lastFloor, elevatorNum);
             UserInterface UI = new UserInterface(building);
             UI.start();
         } catch (ArrayIndexOutOfBoundsException | NumberFormatException ex) {

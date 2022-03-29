@@ -11,11 +11,16 @@ public class ElevatorSystem {
             elevators[i] = new Elevator(startFloor, building);
     }
 
-    public void notifyUp (int floorNum) {
+    private void notify(int floorNum, int dir) { //implements logic
         Elevator toNotify = null;
         int shortestPath = 0;
-        for (Elevator elevator : elevators) {
-            if (elevator.getState() == ElevatorState.STOP || (elevator.getState() == ElevatorState.UP && elevator.getCurrentFloor() < floorNum)) {
+        for (Elevator elevator : elevators) { //search stopping or going in the good way elevator
+            boolean checkMove;
+            if (dir == 1)
+                checkMove = (elevator.getState() == ElevatorState.UP && elevator.getCurrentFloor() < floorNum);
+            else
+                checkMove = (elevator.getState() == ElevatorState.DOWN && elevator.getCurrentFloor() > floorNum);
+            if (elevator.getState() == ElevatorState.STOP || checkMove) {
                 int path = abs(elevator.getCurrentFloor() - floorNum);
                 if (toNotify == null) {
                     shortestPath = path;
@@ -27,11 +32,11 @@ public class ElevatorSystem {
                 }
             }
         }
-        if (toNotify != null) {
-            toNotify.setNotification(floorNum, 1);
+        if (toNotify != null) { //if find, return
+            toNotify.setNotification(floorNum, dir);
             return;
         }
-        for (Elevator elevator : elevators) {
+        for (Elevator elevator : elevators) { //the nearest elevator from every elevators
             int path = abs(elevator.getDestination() - floorNum) + abs(elevator.getDestination() - elevator.getCurrentFloor());
             if (toNotify == null) {
                 shortestPath = path;
@@ -43,44 +48,16 @@ public class ElevatorSystem {
             }
         }
         if (toNotify != null) {
-            toNotify.setNotification(floorNum, 1);
+            toNotify.setNotification(floorNum, dir);
         }
     }
 
+    public void notifyUp (int floorNum) {
+        notify(floorNum, 1);
+    }
+
     public void notifyDown (int floorNum) {
-        Elevator toNotify = null;
-        int shortestPath = 0;
-        for (Elevator elevator : elevators) {
-            if (elevator.getState() == ElevatorState.STOP || (elevator.getState() == ElevatorState.DOWN && elevator.getCurrentFloor() > floorNum)) {
-                int path = abs(elevator.getCurrentFloor() - floorNum);
-                if (toNotify == null) {
-                    shortestPath = path;
-                    toNotify = elevator;
-                }
-                else if (path < shortestPath) {
-                    toNotify = elevator;
-                    shortestPath = path;
-                }
-            }
-        }
-        if (toNotify != null) {
-            toNotify.setNotification(floorNum, -1);
-            return;
-        }
-        for (Elevator elevator : elevators) {
-            int path = abs(elevator.getDestination() - floorNum) + abs(elevator.getDestination() - elevator.getCurrentFloor());
-            if (toNotify == null) {
-                shortestPath = path;
-                toNotify = elevator;
-            }
-            else if (path < shortestPath) {
-                toNotify = elevator;
-                shortestPath = path;
-            }
-        }
-        if (toNotify != null) {
-            toNotify.setNotification(floorNum, -1);
-        }
+        notify(floorNum, -1);
     }
 
     public void setFloorInElevator (int elevator_num, int floor) {
