@@ -30,11 +30,11 @@ public class Building {
 
     public void click (int num, int floor) {
         if (num < 0 || num >= elevatorNum) {
-            System.out.println("Niepoprawny numer windy!");
+            System.out.println("Invalid elevator number!");
             return;
         }
         if (floor < firstFloor || floor > lastFloor) {
-            System.out.println("Niepoprawny numer piętra!");
+            System.out.println("Invalid floor number!");
             return;
         }
         elevatorSystem.setFloorInElevator(num, floor - firstFloor);
@@ -42,11 +42,11 @@ public class Building {
 
     public void setPassenger (int start, int change) {
         if (start < firstFloor || start > lastFloor) {
-            System.out.println("Niepoprawny numer piętra!");
+            System.out.println("Invalid floor number!");
             return;
         }
         if (start + change < firstFloor || start + change > lastFloor) {
-            System.out.println("Niepoprawny numer piętra docelowego!");
+            System.out.println("Invalid destination floor number!");
             return;
         }
         floors[start - firstFloor].setPassenger(change);
