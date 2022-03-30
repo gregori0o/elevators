@@ -3,9 +3,9 @@ import java.util.ArrayList;
 public class Building {
     private ElevatorSystem elevatorSystem;
     private Floor[] floors;
-    private int firstFloor;
-    private int lastFloor;
-    private int elevatorNum;
+    private final int firstFloor;
+    private final int lastFloor;
+    private final int elevatorNum;
 
     public Building (int firstFloor, int lastFloor, int elevatorNum) {
         this.elevatorNum = elevatorNum;
@@ -58,12 +58,12 @@ public class Building {
 
     public ArrayList<Integer> getPassengers (int floor, int change) {
         if (change == 1) {
-            ArrayList<Integer> res = floors[floor].getGoUpPassengers();
+            ArrayList<Integer> res = floors[floor - firstFloor].getGoUpPassengers();
             if (res != null)
                 return res;
         }
         else if (change == -1) {
-            ArrayList<Integer> res = floors[floor].getGoDownPassengers();
+            ArrayList<Integer> res = floors[floor - firstFloor].getGoDownPassengers();
             if (res != null)
                 return res;
         }

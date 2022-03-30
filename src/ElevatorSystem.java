@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 import static java.lang.Math.abs;
 
 public class ElevatorSystem {
@@ -37,7 +35,7 @@ public class ElevatorSystem {
             return;
         }
         for (Elevator elevator : elevators) { //the nearest elevator from every elevators
-            int path = abs(elevator.getDestination() - floorNum) + abs(elevator.getDestination() - elevator.getCurrentFloor());
+            int path = abs(elevator.getLastDestination() - floorNum) + abs(elevator.getLastDestination() - elevator.getCurrentFloor());
             if (toNotify == null) {
                 shortestPath = path;
                 toNotify = elevator;

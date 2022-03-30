@@ -23,10 +23,6 @@ public class Main {
         } catch (ArrayIndexOutOfBoundsException | NumberFormatException ex) {
             System.out
                     .println("Arguments it isn't correct. The valid execution is: java Main int<first floor> int<last floor> int<number of elevators>.");
-        } catch (Exception ex) {
-            System.out
-                    .println("The valid execution is: java Main int<first floor> int<last floor> int<number of elevators>.");
-            System.out.println(ex.toString());
         }
     }
 }

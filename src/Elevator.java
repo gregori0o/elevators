@@ -63,10 +63,59 @@ public class Elevator {
         }
     }
 
+    private void addPassengerFromFloor (int dir) { //take passengers from floor
+        for (int floor : building.getPassengers(currentFloor, dir)) {
+            setNotification(floor, 0);
+        }
+    }
+
+    private boolean removeFromQueueUp () { //take as much as possible from queue
+        boolean flag = false;
+        for (Iterator<Pair> it = notificationQueue.iterator(); it.hasNext(); ) {
+            Pair element = it.next();
+            if (element.getFloor() >= currentFloor && element.getNextDirection() != -1) {
+                if (element.getFloor() > currentFloor) {
+                    setNotification(element.getFloor(), element.getNextDirection());
+                } else
+                    flag = true;
+                it.remove();
+            }
+        }
+        return flag;
+    }
+
+    private boolean removeFromQueueDown () { //take as much as possible from queue
+        boolean flag = false;
+        for (Iterator<Pair> it = notificationQueue.iterator(); it.hasNext(); ) { //take as much as possible from queue
+            Pair element = it.next();
+            if (element.getFloor() <= currentFloor && element.getNextDirection() != 1) {
+                if (element.getFloor() < currentFloor) {
+                    setNotification(element.getFloor(), element.getNextDirection());
+                } else
+                    flag = true;
+                it.remove();
+            }
+        }
+        return flag;
+    }
+
     public void step() {
         if (state == ElevatorState.STOP) { //elevator is stopped so check queue
-            if (!notificationQueue.isEmpty())
-                state = ElevatorState.GO;
+            if (!notificationQueue.isEmpty()) {
+                Pair nextMove = notificationQueue.element();
+                if (nextMove.getFloor() >= currentFloor && nextMove.getNextDirection() != -1) { //elevator goes up for passenger and next go up so it can take passenger on way
+                    state = ElevatorState.UP;
+                    boolean flag = removeFromQueueUp();
+                    if (flag)
+                        addPassengerFromFloor(1);
+                } else if (nextMove.getFloor() <= currentFloor && nextMove.getNextDirection() != 1) {
+                    state = ElevatorState.DOWN;
+                    boolean flag = removeFromQueueDown();
+                    if (flag)
+                        addPassengerFromFloor(-1);
+                } else
+                    state = ElevatorState.GO;
+            }
         }
         move();
         if (state == ElevatorState.GO) { //elevator go to floor of top of queue
@@ -79,34 +128,14 @@ public class Elevator {
                 }
                 else if (nextMove.getNextDirection() == 1) { //elevator take passenger and go up
                     state = ElevatorState.UP;
-                    for (int floor : building.getPassengers(currentFloor, 1)) { //take passengers from floor
-                        setNotification(floor, 0);
-                    }
-                    for (Iterator<Pair> it = notificationQueue.iterator(); it.hasNext(); ) { //take as much as possible from queue
-                        Pair element = it.next();
-                        if (element.getFloor() >= currentFloor && element.getNextDirection() != -1) {
-                            if (element.getFloor() > currentFloor) {
-                                setNotification(element.getFloor(), element.getNextDirection());
-                            }
-                            it.remove();
-                        }
-                    }
+                    addPassengerFromFloor(1);
+                    removeFromQueueUp();
                     break;
                 }
                 else if (nextMove.getNextDirection() == -1) { //symmetrical situation
                     state = ElevatorState.DOWN;
-                    for (int floor : building.getPassengers(currentFloor, -1)) {
-                        setNotification(floor, 0);
-                    }
-                    for (Iterator<Pair> it = notificationQueue.iterator(); it.hasNext(); ) {
-                        Pair element = it.next();
-                        if (element.getFloor() <= currentFloor && element.getNextDirection() != 1) {
-                            if (element.getFloor() < currentFloor) {
-                                setNotification(element.getFloor(), element.getNextDirection());
-                            }
-                            it.remove();
-                        }
-                    }
+                    addPassengerFromFloor(-1);
+                    removeFromQueueDown();
                     break;
                 }
             }
@@ -121,9 +150,7 @@ public class Elevator {
                     break;
             }
             if (flag) {
-                for (int floor : building.getPassengers(currentFloor, 1)) {
-                    setNotification(floor, 0);
-                }
+                addPassengerFromFloor(1);
             }
             if (notificationNext.isEmpty()) {
                 state = ElevatorState.STOP;
@@ -139,9 +166,7 @@ public class Elevator {
                     break;
             }
             if (flag) {
-                for (int floor : building.getPassengers(currentFloor, -1)) {
-                    setNotification(floor, 0);
-                }
+                addPassengerFromFloor(-1);
             }
             if (notificationNext.isEmpty()) {
                 state = ElevatorState.STOP;
@@ -157,13 +182,23 @@ public class Elevator {
         return state;
     }
 
-    public int getDestination() {
+    public int getNextDestination() {
         if (state == ElevatorState.GO)
             return notificationQueue.element().getFloor();
         else if (state == ElevatorState.UP)
             return notificationNext.last().getFloor();
         else if (state == ElevatorState.DOWN)
             return notificationNext.first().getFloor();
+        return currentFloor;
+    }
+
+    public int getLastDestination() {
+        if (state == ElevatorState.GO)
+            return notificationQueue.element().getFloor();
+        else if (state == ElevatorState.UP)
+            return notificationNext.first().getFloor();
+        else if (state == ElevatorState.DOWN)
+            return notificationNext.last().getFloor();
         return currentFloor;
     }
 
@@ -178,6 +213,6 @@ public class Elevator {
 
     @Override
     public String toString() {
-        return "Current floor: " + currentFloor + " go to: " + getDestination() + " state: " + state.toString() +"\n";
+        return "Current floor: " + currentFloor + " go to: " + getNextDestination() + " state: " + state.toString() +"\n";
     }
 }
