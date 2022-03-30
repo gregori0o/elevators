@@ -13,7 +13,7 @@ To use this program you need java compiler and:
 git clone https://github.com/gregori0o/elevators elevators
 cd elevators
 ```
-2) Compile and run program:
+2) Compile and run program with three arguments:
 ```
 javac src/*.java
 java -cp src Main int<first floor> int<last floor> int<number of elevators>
